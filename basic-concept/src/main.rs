@@ -46,7 +46,86 @@ fn main() {
     // It will make Rust panics (runtime error) instead.
     // Uncomment to see.
     // let forty_two_item_of_a = a[41];
-    
+    empty_function();
 
-    
+    let result = add(99, 10);
+    println!("The result is {result}");
+
+    // Control flow
+    // if is basically if. In Rust, you must use boolean only.
+    if 2 == 3 {
+        println!("Impossible");
+    } else {
+        println!("Possible");
+    }
+
+    // This is dumb. Just use 2 == 3
+    let value_from_if = if 2 == 3 { true } else { false };
+    let value_but_smarter = 2 == 3;
+
+    loop {
+        // Infinite loop. Use `break` to break out.
+        break;
+    }
+    // just like if you can use loop for expression
+    let mut counter = 0;
+    let value_from_loop = loop {
+        counter += 1;
+        if counter > 99 {
+            break counter;
+        }
+    };
+    // Just like the preious code, this is dumb. It's just for demonstration purpose.
+
+    // In case you have more than one nested loop, you can use label to braek out of a specific
+    // loop. Otherwise, it would break the innermost loop.
+    'outer_heaven: loop {
+        println!("something like that!");
+        let mut counter = 90;
+        loop {
+            println!("Counting to {counter}");
+            counter += 1;
+            if counter == 99 {
+                break 'outer_heaven;
+            }
+        }
+    }
+
+    // If you want to use a loop with condition, just use while like in other languages.
+    let mut counter = 0;
+    while counter < 90 {
+        // Old syntax.
+        println!("Counter is {}", counter);
+        counter += 1;
+    }
+
+    // Range for loop. It is like Python version of for-loop.
+    // 1..10 is exclusive. 10 is not included.
+    // 1..=10 is inclusive. 10 is included.
+    for i in 1..10 {
+        println!("The value of i is {i}");
+    }
+
+    // Since for loop in a collection simiar to Python.
+    // You can use an array as well.
+    let very_big_array = [1, 23, 4, 5, 23, 616, 61, 61, 62, 6];
+    for item in very_big_array {
+        println!("item is {item}");
+    }
+    for item in (1..100).rev() {
+        println!("Reversed {item}");
+    }
+}
+
+fn empty_function() {
+    // This is a function without any functionality (pun intended).
+    // Its purpose is to show Rust syntax of defining a function.
+}
+
+fn add(a: i32, b: i32) -> i32 {
+    // This is a function with parameters. Anything passed is called an argument.
+    // This is fully typed. I even annotated return type.
+    // You don't need return statement. The last expression is used as the return value.
+    // Don't use semi colon! It will not be returned.
+    a + b
 }
