@@ -14,6 +14,9 @@ impl Rectangle {
     fn can_hold(&self, other: &Rectangle) -> bool {
         self.width >= other.width && self.height > other.height
     }
+    fn can_hold_other_way(&self, other: &Rectangle) -> bool {
+        self.width >= other.height && self.height >= other.width
+    }
 }
 
 #[cfg(test)]
@@ -70,9 +73,9 @@ mod tests {
 
     // you can make test only pass if panics is from expected source
     const real_panic: &'static str = "This should happens";
-    
+
     #[test]
-    #[should_panic(expected="{}", real_panic)]
+    #[should_panic(expected = "{}", real_panic)]
     fn test_expected_panic() {
         // Uncomment to make test fails.
         // panic!("False");
