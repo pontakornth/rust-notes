@@ -1,0 +1,22 @@
+// OOP part is skipped as there is not enough code to make its own lesson.
+// It's better to be read at the book.
+fn main() {
+    println!("Hello, world!");
+    let favorite_color: Option<&str> = None;
+    let is_tuesday = false;
+    let age: Result<u8, &str> = Ok(9);
+    // if let is basically if
+    if let Some(color) = favorite_color {
+        println!("My favorite color is {color}");
+    } else if is_tuesday {
+        println!("Today is Tuesday.");
+    } else if let Ok(my_age) = age {
+        println!("I am {my_age} year(s) old.");
+    }
+
+    // Yes, you can even use while let.
+    let mut stack = Vec::new();
+    stack.push("c");
+    stack.push("b");
+    stack.push("a");
+}
