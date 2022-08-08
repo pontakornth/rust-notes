@@ -8,7 +8,9 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
     let pool = ThreadPool::new(4);
 
-    for stream in listener.incoming() {
+    // Remove take if you want it to take more request.
+    // It is only for demonstration.
+    for stream in listener.incoming().take(2) {
         let stream = stream.unwrap();
         // Single-thread
         // handle_connnection(stream);
@@ -24,6 +26,8 @@ fn main() {
             handle_connnection(stream);
         })
     }
+
+    println!("Shutting down!");
 }
 
 fn handle_connnection(mut stream: TcpStream) {

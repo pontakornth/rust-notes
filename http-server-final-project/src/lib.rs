@@ -3,9 +3,14 @@ use std::{
     thread,
 };
 
+enum Message {
+    NewJob(Job),
+    Terminate,
+}
+
 pub struct ThreadPool {
     workers: Vec<Worker>,
-    sender: mpsc::Sender<Job>,
+    sender: mpsc::Sender<Message>,
 }
 
 type Job = Box<dyn FnOnce() + Send + 'static>;
@@ -28,6 +33,7 @@ impl ThreadPool {
         }
         ThreadPool { workers, sender }
     }
+
     pub fn execute<F>(&self, f: F)
     where
         F: FnOnce() + Send + 'static,
@@ -35,24 +41,53 @@ impl ThreadPool {
         let job = Box::new(f);
         // It won't fail anyway.
         // We cannot stop it at this moment.
-        self.sender.send(job).unwrap();
+        self.sender.send(Message::NewJob(job)).unwrap();
+    }
+}
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+        for _ in &self.workers {
+            self.sender.send(Message::Terminate).unwrap();
+        }
+        println!("Shutting down all workers!");
+        // If a workers is busy, it may not receive the message.
+        // The other workes may take the message. Since it never be told to terminate, it will
+        // cause deadlock.
+        for worker in &mut self.workers {
+            println!("Shutting down worker {}", worker.id);
+            if let Some(thread) = worker.thread.take() {
+                thread.join().unwrap();
+            }
+        }
     }
 }
 
 struct Worker {
     id: usize,
-    thread: thread::JoinHandle<()>,
+    thread: Option<thread::JoinHandle<()>>,
 }
 
 impl Worker {
-    fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
+    fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Message>>>) -> Worker {
         let thread = thread::spawn(move || loop {
             // we cannot use while let
             // It will not drop job.
-            let job = receiver.lock().unwrap().recv().unwrap();
-            println!("Workes {}: I got this job! Executing...", id);
-            job();
+            let message = receiver.lock().unwrap().recv().unwrap();
+            match message {
+                Message::NewJob(job) => {
+                    println!("Worker {id} got job! Executing...");
+                    job();
+                }
+                Message::Terminate => {
+                    println!("Worker {id} must be terminated! Oh no.");
+                    break;
+                }
+            }
         });
-        Worker { id, thread }
+        Worker {
+            id,
+            thread: Some(thread),
+        }
     }
 }
