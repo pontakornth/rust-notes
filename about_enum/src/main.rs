@@ -4,6 +4,7 @@ enum TrafficColor {
     Red,
     Green,
     Blue,
+    Blank,
 }
 
 // You can add a value to an enum as well.
@@ -16,6 +17,7 @@ enum IpAddress {
 enum Shape {
     Circle(f64),
     Rectangle(f64, f64),
+    Line(f64),
 }
 
 // You can even implement method for an enum
@@ -24,6 +26,7 @@ impl Shape {
         match self {
             Shape::Circle(radius) => radius * radius * PI,
             Shape::Rectangle(width, height) => width * height,
+	    Shape::Line(_) => 0
         }
     }
 }
